@@ -1,25 +1,13 @@
-FROM golang:1.19-alpine AS builder
+# Choose whatever you want, version >= 1.16
+FROM golang:1.21-alpine
 
-LABEL maintainer="Vic Shóstak <vic@shostak.dev> (https://shostak.dev/)"
+WORKDIR /app
 
-# Move to working directory (/build).
-WORKDIR /build
+RUN go install github.com/cosmtrek/air@latest
 
-# Copy and download dependency using go mod.
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the code into the container.
-COPY . .
+EXPOSE 5000
 
-# Set necessary environment variables needed for our image and build the API server.
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o apiserver .
-
-FROM scratch
-
-# Copy binary and config files from /build to root folder of scratch container.
-COPY --from=builder ["/build/apiserver", "/build/.env", "/"]
-
-# Command to run when starting the container.
-ENTRYPOINT ["/apiserver"]
+CMD ["air", "-c", ".air.toml"]
