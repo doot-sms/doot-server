@@ -1,0 +1,14 @@
+version: "2"
+sql:
+  - schema: "pkg/sql/schema.sql"
+    queries: "pkg/sql/queries"
+    engine: "mysql"
+    gen:
+      go:
+        package: "db"
+        out: "pkg/db"
+
+    database:
+      uri: "${DATABASE_URI}"
+    rules:
+      - sqlc/db-prepare
