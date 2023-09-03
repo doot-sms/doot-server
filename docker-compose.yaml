@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   backend:
     build:
@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - SERVER_PORT=5000
+      - DATABASE_URI=mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+    env_file:
+      - .env
     ports:
       - 5000:5000
     # Important to bind/mount your codebase dir to /app dir for live reload
@@ -29,13 +32,13 @@ services:
     image: mysql:8.1.0
     restart: always
     environment:
-      MYSQL_DATABASE: "db"
+      MYSQL_DATABASE: ${DB_NAME}
       # So you don't have to use root, but you can if you like
-      MYSQL_USER: "user"
+      MYSQL_USER: ${DB_USER}
       # You can use whatever password you like
-      MYSQL_PASSWORD: "password"
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       # Password for root access
-      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - "3306:3306"
