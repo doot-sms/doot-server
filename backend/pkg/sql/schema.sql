@@ -63,7 +63,7 @@ CREATE TABLE "messages" (
   "id" serial PRIMARY KEY NOT NULL,
   "to" string NOT NULL,
   "content" string NOT NULL,
-  "batch_id" int NOT NULL,
+  "batch_id" int,
   "sent_at" timestamp,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now()),
