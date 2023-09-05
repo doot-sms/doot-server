@@ -11,101 +11,101 @@ import (
 	"time"
 )
 
-type UserSenderReqsRequestor string
+type UssrRequestor string
 
 const (
-	UserSenderReqsRequestorUser   UserSenderReqsRequestor = "user"
-	UserSenderReqsRequestorSender UserSenderReqsRequestor = "sender"
+	UssrRequestorUser   UssrRequestor = "user"
+	UssrRequestorSender UssrRequestor = "sender"
 )
 
-func (e *UserSenderReqsRequestor) Scan(src interface{}) error {
+func (e *UssrRequestor) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = UserSenderReqsRequestor(s)
+		*e = UssrRequestor(s)
 	case string:
-		*e = UserSenderReqsRequestor(s)
+		*e = UssrRequestor(s)
 	default:
-		return fmt.Errorf("unsupported scan type for UserSenderReqsRequestor: %T", src)
+		return fmt.Errorf("unsupported scan type for UssrRequestor: %T", src)
 	}
 	return nil
 }
 
-type NullUserSenderReqsRequestor struct {
-	UserSenderReqsRequestor UserSenderReqsRequestor
-	Valid                   bool // Valid is true if UserSenderReqsRequestor is not NULL
+type NullUssrRequestor struct {
+	UssrRequestor UssrRequestor
+	Valid         bool // Valid is true if UssrRequestor is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullUserSenderReqsRequestor) Scan(value interface{}) error {
+func (ns *NullUssrRequestor) Scan(value interface{}) error {
 	if value == nil {
-		ns.UserSenderReqsRequestor, ns.Valid = "", false
+		ns.UssrRequestor, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.UserSenderReqsRequestor.Scan(value)
+	return ns.UssrRequestor.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullUserSenderReqsRequestor) Value() (driver.Value, error) {
+func (ns NullUssrRequestor) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.UserSenderReqsRequestor), nil
+	return string(ns.UssrRequestor), nil
 }
 
-type UserSenderReqsStatus string
+type UssrStatus string
 
 const (
-	UserSenderReqsStatusRequested UserSenderReqsStatus = "requested"
-	UserSenderReqsStatusAccepted  UserSenderReqsStatus = "accepted"
-	UserSenderReqsStatusRejected  UserSenderReqsStatus = "rejected"
+	UssrStatusRequested UssrStatus = "requested"
+	UssrStatusAccepted  UssrStatus = "accepted"
+	UssrStatusRejected  UssrStatus = "rejected"
 )
 
-func (e *UserSenderReqsStatus) Scan(src interface{}) error {
+func (e *UssrStatus) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = UserSenderReqsStatus(s)
+		*e = UssrStatus(s)
 	case string:
-		*e = UserSenderReqsStatus(s)
+		*e = UssrStatus(s)
 	default:
-		return fmt.Errorf("unsupported scan type for UserSenderReqsStatus: %T", src)
+		return fmt.Errorf("unsupported scan type for UssrStatus: %T", src)
 	}
 	return nil
 }
 
-type NullUserSenderReqsStatus struct {
-	UserSenderReqsStatus UserSenderReqsStatus
-	Valid                bool // Valid is true if UserSenderReqsStatus is not NULL
+type NullUssrStatus struct {
+	UssrStatus UssrStatus
+	Valid      bool // Valid is true if UssrStatus is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullUserSenderReqsStatus) Scan(value interface{}) error {
+func (ns *NullUssrStatus) Scan(value interface{}) error {
 	if value == nil {
-		ns.UserSenderReqsStatus, ns.Valid = "", false
+		ns.UssrStatus, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.UserSenderReqsStatus.Scan(value)
+	return ns.UssrStatus.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullUserSenderReqsStatus) Value() (driver.Value, error) {
+func (ns NullUssrStatus) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.UserSenderReqsStatus), nil
+	return string(ns.UssrStatus), nil
 }
 
 type Batch struct {
 	ID        int32
-	QueuedAt  time.Time
+	QueuedAt  sql.NullTime
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type Message struct {
 	ID        int32
-	ToAddress string
+	To        string
 	Content   string
 	BatchID   int32
 	SentAt    sql.NullTime
@@ -135,7 +135,7 @@ type UserApiKey struct {
 	ApiKey       string
 	User         int32
 	ApiSecret    string
-	Expiresafter sql.NullTime
+	ExpiresAfter sql.NullTime
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
@@ -151,8 +151,8 @@ type UserSenderReq struct {
 	ID        int32
 	UserID    int32
 	SenderID  int32
-	Requestor UserSenderReqsRequestor
-	Status    UserSenderReqsStatus
+	Requestor UssrRequestor
+	Status    UssrStatus
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

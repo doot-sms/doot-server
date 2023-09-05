@@ -1,71 +1,90 @@
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TYPE "ussr_requestor" AS ENUM (
+  'user',
+  'sender'
 );
 
-CREATE TABLE senders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  device_id VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TYPE "ussr_status" AS ENUM (
+  'requested',
+  'accepted',
+  'rejected'
 );
 
-CREATE TABLE user_senders (
-  user_id INT NOT NULL,
-  sender_id INT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (user_id, sender_id)
+CREATE TABLE "users" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "email" string UNIQUE NOT NULL,
+  "password" string NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE user_sender_reqs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  sender_id INT NOT NULL,
-  requestor ENUM('user', 'sender') NOT NULL,
-  status ENUM('requested', 'accepted', 'rejected') NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TABLE "senders" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "user_id" int NOT NULL,
+  "device_id" string UNIQUE NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE user_api_keys (
-  api_key VARCHAR(255) PRIMARY KEY NOT NULL,
-  user INT NOT NULL,
-  api_secret VARCHAR(255) NOT NULL,
-  expires_after TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TABLE "user_senders" (
+  "user_id" int NOT NULL,
+  "sender_id" int NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now()),
+  PRIMARY KEY ("user_id", "sender_id")
 );
 
-CREATE TABLE batches (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  queued_at TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TABLE "user_sender_reqs" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "user_id" int NOT NULL,
+  "sender_id" int NOT NULL,
+  "requestor" ussr_requestor NOT NULL,
+  "status" ussr_status NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE messages (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  to_address VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  batch_id INT NOT NULL,
-  sent_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-  user_id INT NOT NULL,
-  sender_id INT NOT NULL
+CREATE TABLE "user_api_keys" (
+  "api_key" string PRIMARY KEY NOT NULL,
+  "user" int NOT NULL,
+  "api_secret" string NOT NULL,
+  "expiresAfter" timestamp,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE senders ADD FOREIGN KEY (user_id) REFERENCES users(id);
-ALTER TABLE user_senders ADD FOREIGN KEY (user_id) REFERENCES users(id);
-ALTER TABLE user_senders ADD FOREIGN KEY (sender_id) REFERENCES senders(id);
-ALTER TABLE user_sender_reqs ADD FOREIGN KEY (user_id) REFERENCES users(id);
-ALTER TABLE user_sender_reqs ADD FOREIGN KEY (sender_id) REFERENCES senders(id);
-ALTER TABLE user_api_keys ADD FOREIGN KEY (user) REFERENCES users(id);
-ALTER TABLE messages ADD FOREIGN KEY (batch_id) REFERENCES batches(id);
-ALTER TABLE messages ADD FOREIGN KEY (user_id) REFERENCES users(id);
-ALTER TABLE messages ADD FOREIGN KEY (sender_id) REFERENCES senders(id);
+CREATE TABLE "batches" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "queued_at" timestamp,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "messages" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "to" string NOT NULL,
+  "content" string NOT NULL,
+  "batch_id" int NOT NULL,
+  "sent_at" timestamp,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now()),
+  "user_id" int NOT NULL,
+  "sender_id" int NOT NULL
+);
+
+ALTER TABLE "senders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "user_senders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "user_senders" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
+
+ALTER TABLE "user_sender_reqs" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "user_sender_reqs" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
+
+ALTER TABLE "user_api_keys" ADD FOREIGN KEY ("user") REFERENCES "users" ("id");
+
+ALTER TABLE "messages" ADD FOREIGN KEY ("batch_id") REFERENCES "batches" ("id");
+
+ALTER TABLE "messages" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "messages" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");

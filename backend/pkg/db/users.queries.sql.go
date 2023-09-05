@@ -9,22 +9,36 @@ import (
 	"context"
 )
 
-const createUser = `-- name: CreateUser :exec
+const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, password)
 VALUES ($1, $2)
+RETURNING id, email, password, created_at, updated_at
 `
 
-func (q *Queries) CreateUser(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, createUser)
-	return err
+type CreateUserParams struct {
+	Email    string
+	Password string
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser, arg.Email, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, email, password, created_at, updated_at FROM users WHERE email = $1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -40,8 +54,8 @@ const getUserByID = `-- name: GetUserByID :one
 SELECT id, email, password, created_at, updated_at FROM users WHERE id = $1
 `
 
-func (q *Queries) GetUserByID(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID)
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -53,11 +67,25 @@ func (q *Queries) GetUserByID(ctx context.Context) (User, error) {
 	return i, err
 }
 
-const updatePassword = `-- name: UpdatePassword :exec
+const updatePassword = `-- name: UpdatePassword :one
 UPDATE users SET password = $1 WHERE id = $2
+RETURNING id, email, password, created_at, updated_at
 `
 
-func (q *Queries) UpdatePassword(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, updatePassword)
-	return err
+type UpdatePasswordParams struct {
+	Password string
+	ID       int32
+}
+
+func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updatePassword, arg.Password, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

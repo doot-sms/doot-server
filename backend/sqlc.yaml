@@ -2,7 +2,7 @@ version: "2"
 sql:
   - schema: "pkg/sql/schema.sql"
     queries: "pkg/sql/queries"
-    engine: "mysql"
+    engine: "postgresql"
     gen:
       go:
         package: "db"
