@@ -11,8 +11,8 @@ CREATE TYPE "ussr_status" AS ENUM (
 
 CREATE TABLE "users" (
   "id" serial PRIMARY KEY NOT NULL,
-  "email" string UNIQUE NOT NULL,
-  "password" string NOT NULL,
+  "email" TEXT UNIQUE NOT NULL,
+  "password" TEXT NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
@@ -20,7 +20,7 @@ CREATE TABLE "users" (
 CREATE TABLE "senders" (
   "id" serial PRIMARY KEY NOT NULL,
   "user_id" int NOT NULL,
-  "device_id" string UNIQUE NOT NULL,
+  "device_id" TEXT UNIQUE NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
@@ -44,9 +44,9 @@ CREATE TABLE "user_sender_reqs" (
 );
 
 CREATE TABLE "user_api_keys" (
-  "api_key" string PRIMARY KEY NOT NULL,
+  "api_key" TEXT PRIMARY KEY NOT NULL,
   "user" int NOT NULL,
-  "api_secret" string NOT NULL,
+  "api_secret" TEXT NOT NULL,
   "expiresAfter" timestamp,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
@@ -61,8 +61,8 @@ CREATE TABLE "batches" (
 
 CREATE TABLE "messages" (
   "id" serial PRIMARY KEY NOT NULL,
-  "to" string NOT NULL,
-  "content" string NOT NULL,
+  "to" TEXT NOT NULL,
+  "content" TEXT NOT NULL,
   "batch_id" int,
   "sent_at" timestamp,
   "created_at" timestamp NOT NULL DEFAULT (now()),

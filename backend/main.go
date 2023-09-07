@@ -1,12 +1,17 @@
 package main
 
 import (
+	"database/sql"
+	"log"
 	"os"
 
 	"github.com/doot-sms/doot-server/pkg/configs"
+	"github.com/doot-sms/doot-server/pkg/db"
 	"github.com/doot-sms/doot-server/pkg/middleware"
 	"github.com/doot-sms/doot-server/pkg/routes"
 	"github.com/doot-sms/doot-server/pkg/utils"
+
+	_ "github.com/lib/pq"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -31,6 +36,17 @@ func main() {
 	// Define Fiber config.
 	config := configs.FiberConfig()
 
+	database, err := sql.Open("postgres",
+		os.Getenv("DATABASE_URL")+"?sslmode=disable",
+	)
+
+	queries := db.New(database)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	// Define a new Fiber app with config.
 	app := fiber.New(config)
 
@@ -38,10 +54,13 @@ func main() {
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 
 	// Routes.
-	routes.SwaggerRoute(app)  // Register a route for API Docs (Swagger).
-	routes.PublicRoutes(app)  // Register a public routes for app.
-	routes.PrivateRoutes(app) // Register a private routes for app.
-	routes.NotFoundRoute(app) // Register route for 404 Error.
+	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
+	// routes.PublicRoutes(app, queries) // Register a public routes for app.
+	// routes.PrivateRoutes(app)         // Register a private routes for app.
+	// routes.NotFoundRoute(app)         // Register route for 404 Error.
+
+	routes.UserRoutes(app, queries)
+	routes.SenderRoutes(app, queries)
 
 	// Start server (with or without graceful shutdown).
 	if os.Getenv("STAGE_STATUS") == "dev" {
