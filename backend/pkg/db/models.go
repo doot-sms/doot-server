@@ -107,7 +107,7 @@ type Message struct {
 	ID        int32
 	To        string
 	Content   string
-	BatchID   int32
+	BatchID   sql.NullInt32
 	SentAt    sql.NullTime
 	CreatedAt time.Time
 	UpdatedAt time.Time
