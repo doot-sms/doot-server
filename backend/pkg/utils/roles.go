@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/create-go-app/fiber-go-template/pkg/repository"
+	"github.com/doot-sms/doot-server/pkg/repository"
 )
 
 // VerifyRole func for verifying a given role.

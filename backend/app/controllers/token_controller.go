@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/create-go-app/fiber-go-template/app/models"
-	"github.com/create-go-app/fiber-go-template/pkg/utils"
-	"github.com/create-go-app/fiber-go-template/platform/cache"
-	"github.com/create-go-app/fiber-go-template/platform/database"
+	"github.com/doot-sms/doot-server/app/models"
+	"github.com/doot-sms/doot-server/pkg/utils"
+	"github.com/doot-sms/doot-server/platform/cache"
+	"github.com/doot-sms/doot-server/platform/database"
 
 	"github.com/gofiber/fiber/v2"
 )

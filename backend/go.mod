@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	github.com/create-go-app/fiber-go-template v1.14.0
+	github.com/doot-sms/doot-server v1.14.0
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/contrib/jwt v1.0.5

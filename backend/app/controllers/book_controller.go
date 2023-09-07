@@ -3,10 +3,10 @@ package controllers
 import (
 	"time"
 
-	"github.com/create-go-app/fiber-go-template/app/models"
-	"github.com/create-go-app/fiber-go-template/pkg/repository"
-	"github.com/create-go-app/fiber-go-template/pkg/utils"
-	"github.com/create-go-app/fiber-go-template/platform/database"
+	"github.com/doot-sms/doot-server/app/models"
+	"github.com/doot-sms/doot-server/pkg/repository"
+	"github.com/doot-sms/doot-server/pkg/utils"
+	"github.com/doot-sms/doot-server/platform/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
