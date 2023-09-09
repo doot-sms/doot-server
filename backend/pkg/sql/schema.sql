@@ -17,6 +17,14 @@ CREATE TABLE "users" (
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "refresh_tokens" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "user_id" int NOT NULL,
+  "user_agent" TEXT NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
+);
+
 CREATE TABLE "senders" (
   "id" serial PRIMARY KEY NOT NULL,
   "user_id" int NOT NULL,
@@ -70,6 +78,8 @@ CREATE TABLE "messages" (
   "user_id" int NOT NULL,
   "sender_id" int NOT NULL
 );
+
+ALTER TABLE "refresh_tokens" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "senders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 

@@ -115,6 +115,14 @@ type Message struct {
 	SenderID  int32
 }
 
+type RefreshToken struct {
+	ID        int32
+	UserID    int32
+	UserAgent string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type Sender struct {
 	ID        int32
 	UserID    int32
