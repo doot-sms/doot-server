@@ -1,18 +1,27 @@
 package controllers
 
 import (
-	"github.com/doot-sms/doot-server/pkg/db"
+	"github.com/doot-sms/doot-server/app/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 type SenderController struct {
-	db *db.Queries
+	SenderService services.ISenderService
 }
 
-func NewSenderController(queries *db.Queries) *SenderController {
+func NewSenderController(SenderService services.ISenderService) *SenderController {
 	return &SenderController{
-		db: queries,
+		SenderService: SenderService,
 	}
+}
+
+// PublicRoutes func for describe group of public routes.
+func ConnectSenderRoutes(a *fiber.App, SenderService services.ISenderService) {
+	// Create routes group.
+	controller := NewSenderController(SenderService)
+
+	route := a.Group("/api/v1/Senders")
+	route.Post("", controller.SenderRegister)
 }
 
 type CreateSenderRequest struct {
@@ -29,11 +38,19 @@ func (
 		return err
 	}
 
-	args := db.CreateSenderParams{
-		UserID:   req.UserId,
-		DeviceID: req.DeviceId,
+	Sender, err := sc.SenderService.CreateSender(c.Context(), services.CreateSenderParams{
+		UserId:   req.UserId,
+		DeviceId: req.DeviceId,
+	})
+
+	if err != nil {
+		return err
 	}
 
-	sc.db.CreateSender(c.Context(), args)
+	c.JSON(fiber.Map{
+		"message": "success",
+		"Sender":  Sender,
+	})
+
 	return nil
 }

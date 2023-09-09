@@ -10,7 +10,6 @@ import (
 	"github.com/doot-sms/doot-server/pkg/configs"
 	"github.com/doot-sms/doot-server/pkg/db"
 	"github.com/doot-sms/doot-server/pkg/middleware"
-	"github.com/doot-sms/doot-server/pkg/routes"
 	"github.com/doot-sms/doot-server/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -57,6 +56,7 @@ func main() {
 
 	// services
 	userService := services.NewUserService(repository)
+	senderService := services.NewSenderService(repository)
 
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
 	// routes.PublicRoutes(app, queries) // Register a public routes for app.
@@ -64,7 +64,7 @@ func main() {
 	// routes.NotFoundRoute(app)         // Register route for 404 Error.
 
 	controllers.ConnectUserRoutes(app, userService)
-	routes.SenderRoutes(app, repository)
+	controllers.ConnectSenderRoutes(app, senderService)
 
 	// Start server (with or without graceful shutdown).
 	if os.Getenv("STAGE_STATUS") == "dev" {
