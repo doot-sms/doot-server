@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/doot-sms/doot-server/app/controllers"
+	"github.com/doot-sms/doot-server/app/services"
 	"github.com/doot-sms/doot-server/pkg/configs"
 	"github.com/doot-sms/doot-server/pkg/db"
 	"github.com/doot-sms/doot-server/pkg/middleware"
@@ -40,7 +42,7 @@ func main() {
 		os.Getenv("DATABASE_URL")+"?sslmode=disable",
 	)
 
-	queries := db.New(database)
+	repository := db.New(database)
 
 	if err != nil {
 		log.Fatal(err)
@@ -53,14 +55,16 @@ func main() {
 	// Middlewares.
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 
-	// Routes.
+	// services
+	userService := services.NewUserService(repository)
+
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
 	// routes.PublicRoutes(app, queries) // Register a public routes for app.
 	// routes.PrivateRoutes(app)         // Register a private routes for app.
 	// routes.NotFoundRoute(app)         // Register route for 404 Error.
 
-	routes.UserRoutes(app, queries)
-	routes.SenderRoutes(app, queries)
+	controllers.ConnectUserRoutes(app, userService)
+	routes.SenderRoutes(app, repository)
 
 	// Start server (with or without graceful shutdown).
 	if os.Getenv("STAGE_STATUS") == "dev" {

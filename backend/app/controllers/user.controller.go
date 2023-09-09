@@ -1,18 +1,27 @@
 package controllers
 
 import (
-	"github.com/doot-sms/doot-server/pkg/db"
+	"github.com/doot-sms/doot-server/app/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserController struct {
-	db *db.Queries
+	userService services.IUserService
 }
 
-func NewUserController(queries *db.Queries) *UserController {
+func NewUserController(userService services.IUserService) *UserController {
 	return &UserController{
-		db: queries,
+		userService: userService,
 	}
+}
+
+// PublicRoutes func for describe group of public routes.
+func ConnectUserRoutes(a *fiber.App, userService services.IUserService) {
+	// Create routes group.
+	controller := NewUserController(userService)
+
+	route := a.Group("/api/v1/users")
+	route.Post("", controller.UserRegister)
 }
 
 type CreateUserRequest struct {
@@ -21,7 +30,7 @@ type CreateUserRequest struct {
 }
 
 func (
-	sc *UserController,
+	uc *UserController,
 ) UserRegister(c *fiber.Ctx) error {
 	var req CreateUserRequest
 
@@ -29,12 +38,11 @@ func (
 		return err
 	}
 
-	args := db.CreateUserParams{
+	user, err := uc.userService.CreateUser(c.Context(), services.CreateUserParams{
 		Email:    req.Email,
 		Password: req.Password,
-	}
+	})
 
-	user, err := sc.db.CreateUser(c.Context(), args)
 	if err != nil {
 		return err
 	}
