@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/doot-sms/doot-server/pkg/db"
+	"github.com/doot-sms/doot-server/pkg/utils"
 )
 
 type IUserService interface {
@@ -25,17 +26,35 @@ type CreateUserParams struct {
 	Password string
 }
 
-func (userService *UserService) CreateUser(c context.Context, data CreateUserParams) (db.User, error) {
-	args := db.CreateUserParams{
-		Email:    data.Email,
-		Password: data.Password,
-	}
-
-	user, err := userService.db.CreateUser(c, args)
+func (userService *UserService) CreateUser(c context.Context, args CreateUserParams) (db.User, error) {
+	user, err := userService.db.CreateUser(c, db.CreateUserParams{
+		Email:    args.Email,
+		Password: args.Password,
+	})
 
 	if err != nil {
 		return user, err
 	}
 
 	return user, nil
+}
+
+type LoginParams struct {
+	Email    string
+	Password string
+}
+
+func (userService *UserService) Login(c context.Context, args LoginParams) (db.User, error) {
+
+	user, err := userService.db.GetUserByEmail(c, args.Email)
+
+	if err != nil {
+		return user, err
+	}
+
+	passwordHash := utils.GeneratePassword(args.Password)
+
+	if user.Password != passwordHash {
+		return user, ''
+	}
 }
