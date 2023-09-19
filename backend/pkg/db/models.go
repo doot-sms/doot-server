@@ -141,7 +141,7 @@ type User struct {
 
 type UserApiKey struct {
 	ApiKey       string
-	User         int32
+	UserID       int32
 	ApiSecret    string
 	ExpiresAfter sql.NullTime
 	CreatedAt    time.Time

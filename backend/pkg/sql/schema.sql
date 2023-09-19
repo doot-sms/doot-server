@@ -53,9 +53,9 @@ CREATE TABLE "user_sender_reqs" (
 
 CREATE TABLE "user_api_keys" (
   "api_key" TEXT PRIMARY KEY NOT NULL,
-  "user" int NOT NULL,
+  "user_id" int NOT NULL,
   "api_secret" TEXT NOT NULL,
-  "expiresAfter" timestamp,
+  "expires_after" timestamp,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
