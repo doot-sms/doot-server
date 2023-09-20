@@ -22,6 +22,7 @@ func ConnectUserRoutes(a *fiber.App, userService services.IUserService) {
 
 	route := a.Group("/api/v1/users")
 	route.Post("", controller.UserRegister)
+	route.Post("/login", controller.UserLogin)
 }
 
 type CreateUserRequest struct {
@@ -53,4 +54,36 @@ func (
 	})
 
 	return nil
+}
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (
+	uc *UserController,
+) UserLogin(c *fiber.Ctx) error {
+	var req LoginRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+
+	user, err := uc.userService.Login(c.Context(), services.LoginParams{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	c.JSON(fiber.Map{
+		"message": "success",
+		"user":    user,
+	})
+
+	return nil
+
 }
