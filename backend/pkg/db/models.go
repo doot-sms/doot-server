@@ -149,6 +149,7 @@ type UserApiKey struct {
 }
 
 type UserSender struct {
+	ID        int32
 	UserID    int32
 	SenderID  int32
 	CreatedAt time.Time

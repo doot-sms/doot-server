@@ -34,6 +34,7 @@ CREATE TABLE "senders" (
 );
 
 CREATE TABLE "user_senders" (
+  "id" serial PRIMARY KEY NOT NULL,
   "user_id" int NOT NULL,
   "sender_id" int NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
@@ -46,7 +47,7 @@ CREATE TABLE "user_sender_reqs" (
   "user_id" int NOT NULL,
   "sender_id" int NOT NULL,
   "requestor" ussr_requestor NOT NULL,
-  "status" ussr_status NOT NULL,
+  "status" ussr_status NOT NULL DEFAULT 'requested',
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
