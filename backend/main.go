@@ -10,6 +10,7 @@ import (
 	"github.com/doot-sms/doot-server/pkg/configs"
 	"github.com/doot-sms/doot-server/pkg/db"
 	"github.com/doot-sms/doot-server/pkg/middleware"
+	"github.com/doot-sms/doot-server/pkg/routes"
 	"github.com/doot-sms/doot-server/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -63,7 +64,7 @@ func main() {
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService)
 
-	routes.NotFoundRoute(app)         // Register route for 404 Error.
+	routes.NotFoundRoute(app) // Register route for 404 Error.
 
 	// Start server (with or without graceful shutdown).
 	if os.Getenv("STAGE_STATUS") == "dev" {
