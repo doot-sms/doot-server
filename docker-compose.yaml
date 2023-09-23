@@ -8,7 +8,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     env_file:
-      - .env
+      - backend/.env
     ports:
       - 5000:5000
     # Important to bind/mount your codebase dir to /app dir for live reload
