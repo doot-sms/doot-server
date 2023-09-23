@@ -59,12 +59,11 @@ func main() {
 	senderService := services.NewSenderService(repository)
 
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
-	// routes.PublicRoutes(app, queries) // Register a public routes for app.
-	// routes.PrivateRoutes(app)         // Register a private routes for app.
-	// routes.NotFoundRoute(app)         // Register route for 404 Error.
 
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService)
+
+	routes.NotFoundRoute(app)         // Register route for 404 Error.
 
 	// Start server (with or without graceful shutdown).
 	if os.Getenv("STAGE_STATUS") == "dev" {
