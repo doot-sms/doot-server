@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrExpiredToken = fmt.Errorf("Token has expired")
+var ErrExpiredToken = fmt.Errorf("token has expired")
 
 type Payload struct {
 	ID        uuid.UUID `json:"id"`

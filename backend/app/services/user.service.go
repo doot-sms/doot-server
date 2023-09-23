@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/doot-sms/doot-server/pkg/db"
@@ -67,7 +68,9 @@ func (userService *UserService) Login(c context.Context, args LoginParams) (*Log
 		return nil, ErrInvalidCredentials
 	}
 
-	pasetoMaker, err := token.NewPasetoMaker("mR3N0Jm++FXvW/LuE7FfT3Y1C0nQlPNS")
+	symmetricKey := os.Getenv("DOOT_ENCRYPTION_KEY")
+
+	pasetoMaker, err := token.NewPasetoMaker(symmetricKey)
 	if err != nil {
 		return nil, err
 	}
