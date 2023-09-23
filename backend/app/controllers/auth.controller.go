@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/doot-sms/doot-server/app/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,8 +19,6 @@ func NewAuthController(authService services.IAuthService) *AuthController {
 func ConnectAuthRoutes(a *fiber.App, authService services.IAuthService) {
 	// Create routes group.
 	authController := NewAuthController(authService)
-
-	fmt.Println("HERE: \n\n\n", authController)
 
 	route := a.Group("/api/v1/auth")
 	route.Post("/tokens", authController.Login)

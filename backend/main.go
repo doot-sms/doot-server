@@ -4,11 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
+	"time"
 
 	"github.com/doot-sms/doot-server/app/controllers"
 	"github.com/doot-sms/doot-server/app/services"
-	"github.com/doot-sms/doot-server/pkg/configs"
 	"github.com/doot-sms/doot-server/pkg/db"
 	"github.com/doot-sms/doot-server/pkg/middleware"
 	"github.com/doot-sms/doot-server/pkg/routes"
@@ -37,10 +36,21 @@ import (
 // @name Authorization
 func main() {
 	// Define Fiber config.
-	config := configs.FiberConfig()
+	// config := configs.FiberConfig()
+
+	config, err := utils.LoadConfig()
+
+	if err != nil {
+		log.Fatal("cannot load config: ", err)
+		return
+	}
+
+	dbUrl := fmt.Sprintf("postgresql://%s:%s@db:5432/%s", config.DBUser, config.DBPassword, config.DBName)
+
+	fmt.Println(dbUrl)
 
 	database, err := sql.Open("postgres",
-		os.Getenv("DATABASE_URL")+"?sslmode=disable",
+		dbUrl+"?sslmode=disable",
 	)
 
 	repository := db.New(database)
@@ -51,7 +61,9 @@ func main() {
 	}
 
 	// Define a new Fiber app with config.
-	app := fiber.New(config)
+	app := fiber.New(fiber.Config{
+		ReadTimeout: time.Second * time.Duration(config.ServerReadTimeout),
+	})
 
 	// Middlewares.
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
@@ -66,13 +78,12 @@ func main() {
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService)
 
-	fmt.Println("CONNECTING AUTH ROUTES \n\n\n")
 	controllers.ConnectAuthRoutes(app, authService)
 
 	routes.NotFoundRoute(app) // Register route for 404 Error.
 
 	// Start server (with or without graceful shutdown).
-	if os.Getenv("STAGE_STATUS") == "dev" {
+	if config.StageStatus == "dev" {
 		utils.StartServer(app)
 	} else {
 		utils.StartServerWithGracefulShutdown(app)

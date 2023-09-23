@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/doot-sms/doot-server/pkg/db"
@@ -39,6 +38,12 @@ var ErrInvalidCredentials = fmt.Errorf("invalid credentials")
 
 func (authService *AuthService) Login(c context.Context, args LoginParams) (*LoginResponse, error) {
 
+	config, err := utils.LoadConfig()
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot load config: %w", err)
+	}
+
 	user, err := authService.db.GetUserByEmail(c, args.Email)
 
 	if err != nil {
@@ -50,7 +55,7 @@ func (authService *AuthService) Login(c context.Context, args LoginParams) (*Log
 		return nil, ErrInvalidCredentials
 	}
 
-	symmetricKey := os.Getenv("DOOT_ENCRYPTION_KEY")
+	symmetricKey := config.DootEncryptionKey
 
 	pasetoMaker, err := token.NewPasetoMaker(symmetricKey)
 	if err != nil {
