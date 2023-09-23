@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -64,6 +65,8 @@ func main() {
 
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService)
+
+	fmt.Println("CONNECTING AUTH ROUTES \n\n\n")
 	controllers.ConnectAuthRoutes(app, authService)
 
 	routes.NotFoundRoute(app) // Register route for 404 Error.
