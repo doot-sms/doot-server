@@ -58,11 +58,13 @@ func main() {
 	// services
 	userService := services.NewUserService(repository)
 	senderService := services.NewSenderService(repository)
+	authService := services.NewAuthService(repository)
 
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
 
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService)
+	controllers.ConnectAuthRoutes(app, authService)
 
 	routes.NotFoundRoute(app) // Register route for 404 Error.
 
