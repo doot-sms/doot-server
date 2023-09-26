@@ -16,12 +16,12 @@ func NewSenderController(SenderService services.ISenderService) *SenderControlle
 }
 
 // PublicRoutes func for describe group of public routes.
-func ConnectSenderRoutes(a *fiber.App, SenderService services.ISenderService) {
+func ConnectSenderRoutes(a *fiber.App, SenderService services.ISenderService, cookieUserAuthMiddleware fiber.Handler) {
 	// Create routes group.
 	controller := NewSenderController(SenderService)
 
 	route := a.Group("/api/v1/Senders")
-	route.Post("", controller.SenderRegister)
+	route.Post("", cookieUserAuthMiddleware, controller.SenderRegister)
 }
 
 type CreateSenderRequest struct {

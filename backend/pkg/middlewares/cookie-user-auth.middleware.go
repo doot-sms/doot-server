@@ -6,20 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type CookieAuthMiddleware struct {
-	tokenMaker token.TokenMaker
-	config     utils.Config
-}
-
-func (cam *CookieAuthMiddleware) NewCookieAuthMiddleware(tokenMaker token.TokenMaker) fiber.Handler {
+func NewCookieUserAuthMiddleware(tokenMaker token.TokenMaker, config utils.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		accessToken := c.Cookies(cam.config.AccessTokenCookieName)
+		accessToken := c.Cookies(config.AccessTokenCookieName)
 
 		payload, err := tokenMaker.VerifyToken(accessToken)
 
 		if err != nil {
-			c.ClearCookie(cam.config.AccessTokenCookieName)
+			c.ClearCookie(config.AccessTokenCookieName)
 			c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "invalid token",
 			})

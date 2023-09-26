@@ -16,6 +16,7 @@ require (
 	github.com/lib/pq v1.10.2
 	github.com/o1egl/paseto v1.0.0
 	github.com/redis/go-redis/v9 v9.1.0
+	github.com/spf13/viper v1.16.0
 	github.com/swaggo/swag v1.16.2
 	golang.org/x/crypto v0.13.0
 )
@@ -53,7 +54,6 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.16.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
