@@ -9,8 +9,9 @@ import (
 	"github.com/doot-sms/doot-server/app/controllers"
 	"github.com/doot-sms/doot-server/app/services"
 	"github.com/doot-sms/doot-server/pkg/db"
-	"github.com/doot-sms/doot-server/pkg/middleware"
+	"github.com/doot-sms/doot-server/pkg/middlewares"
 	"github.com/doot-sms/doot-server/pkg/routes"
+	"github.com/doot-sms/doot-server/pkg/token"
 	"github.com/doot-sms/doot-server/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -60,18 +61,23 @@ func main() {
 		return
 	}
 
+	// paseto
+	symmetricKey := config.DootEncryptionKey
+
+	pasetoMaker, err := token.NewPasetoMaker(symmetricKey)
+
 	// Define a new Fiber app with config.
 	app := fiber.New(fiber.Config{
 		ReadTimeout: time.Second * time.Duration(config.ServerReadTimeout),
 	})
 
 	// Middlewares.
-	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
+	middlewares.FiberMiddleware(app) // Register Fiber's middleware for app.
 
 	// services
 	userService := services.NewUserService(repository)
 	senderService := services.NewSenderService(repository)
-	authService := services.NewAuthService(repository)
+	authService := services.NewAuthService(repository, config, pasetoMaker)
 
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
 

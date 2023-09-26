@@ -25,24 +25,22 @@ type IAuthService interface {
 }
 
 type AuthService struct {
-	db *db.Queries
+	db         *db.Queries
+	config     utils.Config
+	tokenMaker token.TokenMaker
 }
 
-func NewAuthService(queries *db.Queries) *AuthService {
+func NewAuthService(queries *db.Queries, config utils.Config, tokenMaker token.TokenMaker) *AuthService {
 	return &AuthService{
-		db: queries,
+		db:         queries,
+		config:     config,
+		tokenMaker: tokenMaker,
 	}
 }
 
 var ErrInvalidCredentials = fmt.Errorf("invalid credentials")
 
 func (authService *AuthService) Login(c context.Context, args LoginParams) (*LoginResponse, error) {
-
-	config, err := utils.LoadConfig()
-
-	if err != nil {
-		return nil, fmt.Errorf("cannot load config: %w", err)
-	}
 
 	user, err := authService.db.GetUserByEmail(c, args.Email)
 
@@ -55,20 +53,13 @@ func (authService *AuthService) Login(c context.Context, args LoginParams) (*Log
 		return nil, ErrInvalidCredentials
 	}
 
-	symmetricKey := config.DootEncryptionKey
-
-	pasetoMaker, err := token.NewPasetoMaker(symmetricKey)
-	if err != nil {
-		return nil, err
-	}
-
-	accessToken, tokenErr := pasetoMaker.CreateToken(user.ID, time.Minute*15)
+	accessToken, tokenErr := authService.tokenMaker.CreateToken(user.ID, time.Minute*15)
 
 	if tokenErr != nil {
 		return nil, err
 	}
 
-	refreshToken, tokenErr := pasetoMaker.CreateToken(user.ID, time.Hour*24*7)
+	refreshToken, tokenErr := authService.tokenMaker.CreateToken(user.ID, time.Hour*24*7)
 
 	if tokenErr != nil {
 		return nil, err

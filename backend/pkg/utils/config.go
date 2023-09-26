@@ -27,6 +27,8 @@ type Config struct {
 
 	SupaBasePassword  string `mapstructure:"SUPABASE_PASSWORD"`
 	DootEncryptionKey string `mapstructure:"DOOT_ENCRYPTION_KEY"`
+
+	AccessTokenCookieName string `mapstructure:"COOKIES_ACCESS_TOKEN_COOKIE_NAME"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
