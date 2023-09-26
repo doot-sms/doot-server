@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/doot-sms/doot-server/app/services"
+	"github.com/doot-sms/doot-server/pkg/token"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,7 +26,6 @@ func ConnectSenderRoutes(a *fiber.App, SenderService services.ISenderService, co
 }
 
 type CreateSenderRequest struct {
-	UserId   int32  `json:"user_id"`
 	DeviceId string `json:"device_id"`
 }
 
@@ -34,12 +34,14 @@ func (
 ) SenderRegister(c *fiber.Ctx) error {
 	var req CreateSenderRequest
 
+	var userPayload = c.Locals("user").(*token.Payload)
+
 	if err := c.BodyParser(&req); err != nil {
 		return err
 	}
 
 	Sender, err := sc.SenderService.CreateSender(c.Context(), services.CreateSenderParams{
-		UserId:   req.UserId,
+		UserId:   userPayload.UserId,
 		DeviceId: req.DeviceId,
 	})
 
