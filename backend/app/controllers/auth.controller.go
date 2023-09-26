@@ -38,7 +38,7 @@ func (
 		return err
 	}
 
-	user, err := ac.authService.Login(c.Context(), services.LoginParams{
+	userTokens, err := ac.authService.Login(c.Context(), services.LoginParams{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -49,7 +49,7 @@ func (
 
 	c.JSON(fiber.Map{
 		"message": "success",
-		"user":    user,
+		"user":    userTokens,
 	})
 
 	return nil

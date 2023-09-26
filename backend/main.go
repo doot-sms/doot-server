@@ -74,14 +74,14 @@ func main() {
 	// Middlewares.
 	middlewares.FiberMiddleware(app) // Register Fiber's middleware for app.
 
-	cookieUserAuthMiddleware := middlewares.NewCookieUserAuthMiddleware(pasetoMaker, config)
-
 	// services
 	userService := services.NewUserService(repository)
 	senderService := services.NewSenderService(repository)
 	authService := services.NewAuthService(repository, config, pasetoMaker)
 
 	// routes.SwaggerRoute(app)          // Register a route for API Docs (Swagger).
+
+	cookieUserAuthMiddleware := middlewares.NewCookieUserAuthMiddleware(pasetoMaker, config)
 
 	controllers.ConnectUserRoutes(app, userService)
 	controllers.ConnectSenderRoutes(app, senderService, cookieUserAuthMiddleware)
