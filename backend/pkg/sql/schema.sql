@@ -1,13 +1,6 @@
-CREATE TYPE "ussr_requestor" AS ENUM (
-  'user',
-  'sender'
-);
+CREATE TYPE "ussr_requestor" AS ENUM ('user', 'sender');
 
-CREATE TYPE "ussr_status" AS ENUM (
-  'requested',
-  'accepted',
-  'rejected'
-);
+CREATE TYPE "ussr_status" AS ENUM ('requested', 'accepted', 'rejected');
 
 CREATE TABLE "users" (
   "id" serial PRIMARY KEY NOT NULL,
@@ -80,22 +73,52 @@ CREATE TABLE "messages" (
   "sender_id" int NOT NULL
 );
 
-ALTER TABLE "refresh_tokens" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE
+  "refresh_tokens"
+ADD
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "senders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE
+  "senders"
+ADD
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "user_senders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE
+  "user_senders"
+ADD
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "user_senders" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
+ALTER TABLE
+  "user_senders"
+ADD
+  FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
 
-ALTER TABLE "user_sender_reqs" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE
+  "user_sender_reqs"
+ADD
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "user_sender_reqs" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
+ALTER TABLE
+  "user_sender_reqs"
+ADD
+  FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
 
-ALTER TABLE "user_api_keys" ADD FOREIGN KEY ("user") REFERENCES "users" ("id");
+ALTER TABLE
+  "user_api_keys"
+ADD
+  FOREIGN KEY ("user") REFERENCES "users" ("id");
 
-ALTER TABLE "messages" ADD FOREIGN KEY ("batch_id") REFERENCES "batches" ("id");
+ALTER TABLE
+  "messages"
+ADD
+  FOREIGN KEY ("batch_id") REFERENCES "batches" ("id");
 
-ALTER TABLE "messages" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE
+  "messages"
+ADD
+  FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "messages" ADD FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
+ALTER TABLE
+  "messages"
+ADD
+  FOREIGN KEY ("sender_id") REFERENCES "senders" ("id");
