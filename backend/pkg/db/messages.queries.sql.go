@@ -11,10 +11,10 @@ import (
 )
 
 const createMessage = `-- name: CreateMessage :one
-INSERT INTO "messages"
-  ("to", content, user_id, batch_id)
-  VALUES ( $1, $2, $3, $4 )
-RETURNING id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id
+INSERT INTO
+  "messages" ("to", content, user_id, batch_id)
+VALUES
+  ($1, $2, $3, $4) RETURNING id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id
 `
 
 type CreateMessageParams struct {
@@ -47,11 +47,14 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 }
 
 const getSenderMessages = `-- name: GetSenderMessages :many
-SELECT messages.id, messages."to", messages.content, messages.batch_id, messages.sent_at, messages.created_at, messages.updated_at, messages.user_id, messages.sender_id
-  FROM user_senders
-    LEFT JOIN messages
-    ON user_senders.user_id = messages.user_id
-  WHERE messages.sent_at is null AND user_senders.sender_id = $1
+SELECT
+  messages.id, messages."to", messages.content, messages.batch_id, messages.sent_at, messages.created_at, messages.updated_at, messages.user_id, messages.sender_id
+FROM
+  user_senders
+  LEFT JOIN messages ON user_senders.user_id = messages.user_id
+WHERE
+  messages.sent_at is null
+  AND user_senders.sender_id = $1
 `
 
 type GetSenderMessagesRow struct {
@@ -100,7 +103,12 @@ func (q *Queries) GetSenderMessages(ctx context.Context, senderID int32) ([]GetS
 }
 
 const getUserMessages = `-- name: GetUserMessages :many
-SELECT id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id FROM messages WHERE user_id = $1
+SELECT
+  id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id
+FROM
+  messages
+WHERE
+  user_id = $1
 `
 
 func (q *Queries) GetUserMessages(ctx context.Context, userID int32) ([]Message, error) {
@@ -137,10 +145,13 @@ func (q *Queries) GetUserMessages(ctx context.Context, userID int32) ([]Message,
 }
 
 const markAsSent = `-- name: MarkAsSent :one
-UPDATE "messages"
-  SET sent_at = now(), sender_id = $2
-  WHERE id = $1
-RETURNING id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id
+UPDATE
+  "messages"
+SET
+  sent_at = now(),
+  sender_id = $2
+WHERE
+  id = $1 RETURNING id, "to", content, batch_id, sent_at, created_at, updated_at, user_id, sender_id
 `
 
 type MarkAsSentParams struct {

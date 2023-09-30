@@ -10,9 +10,10 @@ import (
 )
 
 const createRefreshToken = `-- name: CreateRefreshToken :one
-INSERT INTO refresh_tokens (user_id, user_agent)
-VALUES ($1, $2)
-RETURNING id, user_id, user_agent, created_at, updated_at
+INSERT INTO
+    refresh_tokens (user_id, user_agent)
+VALUES
+    ($1, $2) RETURNING id, user_id, user_agent, created_at, updated_at
 `
 
 type CreateRefreshTokenParams struct {

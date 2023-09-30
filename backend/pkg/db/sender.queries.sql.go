@@ -10,9 +10,10 @@ import (
 )
 
 const createSender = `-- name: CreateSender :one
-INSERT INTO senders (user_id, device_id)
-VALUES ($1, $2)
-RETURNING id, user_id, device_id, created_at, updated_at
+INSERT INTO
+    senders (user_id, device_id)
+VALUES
+    ($1, $2) RETURNING id, user_id, device_id, created_at, updated_at
 `
 
 type CreateSenderParams struct {
@@ -34,7 +35,12 @@ func (q *Queries) CreateSender(ctx context.Context, arg CreateSenderParams) (Sen
 }
 
 const getSenderByID = `-- name: GetSenderByID :one
-SELECT id, user_id, device_id, created_at, updated_at FROM senders WHERE id = $1
+SELECT
+    id, user_id, device_id, created_at, updated_at
+FROM
+    senders
+WHERE
+    id = $1
 `
 
 func (q *Queries) GetSenderByID(ctx context.Context, id int32) (Sender, error) {
@@ -51,8 +57,13 @@ func (q *Queries) GetSenderByID(ctx context.Context, id int32) (Sender, error) {
 }
 
 const updateSender = `-- name: UpdateSender :one
-UPDATE senders SET user_id = $1, device_id = $2 WHERE id = $3
-RETURNING id, user_id, device_id, created_at, updated_at
+UPDATE
+    senders
+SET
+    user_id = $1,
+    device_id = $2
+WHERE
+    id = $3 RETURNING id, user_id, device_id, created_at, updated_at
 `
 
 type UpdateSenderParams struct {

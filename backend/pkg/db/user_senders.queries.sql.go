@@ -10,10 +10,10 @@ import (
 )
 
 const createUserSenderRelation = `-- name: CreateUserSenderRelation :one
-INSERT INTO user_senders (
-  user_id, sender_id
-) VALUES ( $1, $2 )
-RETURNING id, user_id, sender_id, created_at, updated_at
+INSERT INTO
+  user_senders (user_id, sender_id)
+VALUES
+  ($1, $2) RETURNING id, user_id, sender_id, created_at, updated_at
 `
 
 type CreateUserSenderRelationParams struct {
@@ -35,8 +35,10 @@ func (q *Queries) CreateUserSenderRelation(ctx context.Context, arg CreateUserSe
 }
 
 const deleteUserSenderRelation = `-- name: DeleteUserSenderRelation :exec
-DELETE FROM user_senders
-WHERE id = $1
+DELETE FROM
+  user_senders
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteUserSenderRelation(ctx context.Context, id int32) error {

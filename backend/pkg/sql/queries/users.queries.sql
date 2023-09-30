@@ -2,7 +2,7 @@
 INSERT INTO
     users (email, password)
 VALUES
-    ($ 1, $ 2) RETURNING *;
+    ($1, $2) RETURNING *;
 
 -- name: GetUserByID :one
 SELECT
@@ -10,7 +10,7 @@ SELECT
 FROM
     users
 WHERE
-    id = $ 1;
+    id = $1;
 
 -- name: GetUserByEmail :one
 SELECT
@@ -18,12 +18,12 @@ SELECT
 FROM
     users
 WHERE
-    email = $ 1;
+    email = $1;
 
 -- name: UpdatePassword :one
 UPDATE
     users
 SET
-    password = $ 1
+    password = $1
 WHERE
-    id = $ 2 RETURNING *;
+    id = $2 RETURNING *;

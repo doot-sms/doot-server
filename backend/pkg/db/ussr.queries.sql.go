@@ -10,10 +10,12 @@ import (
 )
 
 const acceptRequest = `-- name: AcceptRequest :one
-UPDATE user_sender_reqs
-  SET status = 'accepted'
-  WHERE id = $1
-  RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
+UPDATE
+  user_sender_reqs
+SET
+  "status" = 'accepted'
+WHERE
+  id = $1 RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
 `
 
 func (q *Queries) AcceptRequest(ctx context.Context, id int32) (UserSenderReq, error) {
@@ -32,10 +34,10 @@ func (q *Queries) AcceptRequest(ctx context.Context, id int32) (UserSenderReq, e
 }
 
 const createUSSRRequest = `-- name: CreateUSSRRequest :one
-INSERT INTO user_sender_reqs (
-  user_id, sender_id, requestor
-) VALUES ($1, $2, $3)
-RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
+INSERT INTO
+  user_sender_reqs (user_id, sender_id, requestor)
+VALUES
+  ($1, $2, $3) RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
 `
 
 type CreateUSSRRequestParams struct {
@@ -59,11 +61,145 @@ func (q *Queries) CreateUSSRRequest(ctx context.Context, arg CreateUSSRRequestPa
 	return i, err
 }
 
+const getPendingRequestsBySenderId = `-- name: GetPendingRequestsBySenderId :many
+SELECT id, user_id, sender_id, requestor, status, created_at, updated_at FROM user_sender_reqs WHERE sender_id = $1 and "status" = $2
+`
+
+type GetPendingRequestsBySenderIdParams struct {
+	SenderID int32
+	Status   UssrStatus
+}
+
+func (q *Queries) GetPendingRequestsBySenderId(ctx context.Context, arg GetPendingRequestsBySenderIdParams) ([]UserSenderReq, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingRequestsBySenderId, arg.SenderID, arg.Status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UserSenderReq
+	for rows.Next() {
+		var i UserSenderReq
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.SenderID,
+			&i.Requestor,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPendingRequestsByUserId = `-- name: GetPendingRequestsByUserId :many
+SELECT id, user_id, sender_id, requestor, status, created_at, updated_at FROM user_sender_reqs WHERE user_id = $1 and "status" = $2
+`
+
+type GetPendingRequestsByUserIdParams struct {
+	UserID int32
+	Status UssrStatus
+}
+
+func (q *Queries) GetPendingRequestsByUserId(ctx context.Context, arg GetPendingRequestsByUserIdParams) ([]UserSenderReq, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingRequestsByUserId, arg.UserID, arg.Status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UserSenderReq
+	for rows.Next() {
+		var i UserSenderReq
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.SenderID,
+			&i.Requestor,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUSSRRequestById = `-- name: GetUSSRRequestById :one
+SELECT id, user_id, sender_id, requestor, status, created_at, updated_at FROM user_sender_reqs where id = $1
+`
+
+func (q *Queries) GetUSSRRequestById(ctx context.Context, id int32) (UserSenderReq, error) {
+	row := q.db.QueryRowContext(ctx, getUSSRRequestById, id)
+	var i UserSenderReq
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.SenderID,
+		&i.Requestor,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUSSRRequestsByUserIdSenderId = `-- name: GetUSSRRequestsByUserIdSenderId :one
+SELECT
+  id, user_id, sender_id, requestor, status, created_at, updated_at
+FROM
+  user_sender_reqs
+WHERE
+  user_id = $1
+  and sender_id = $2
+  and "status" = $3
+LIMIT 1
+`
+
+type GetUSSRRequestsByUserIdSenderIdParams struct {
+	UserID   int32
+	SenderID int32
+	Status   UssrStatus
+}
+
+func (q *Queries) GetUSSRRequestsByUserIdSenderId(ctx context.Context, arg GetUSSRRequestsByUserIdSenderIdParams) (UserSenderReq, error) {
+	row := q.db.QueryRowContext(ctx, getUSSRRequestsByUserIdSenderId, arg.UserID, arg.SenderID, arg.Status)
+	var i UserSenderReq
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.SenderID,
+		&i.Requestor,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const rejectRequest = `-- name: RejectRequest :one
-UPDATE user_sender_reqs
-  SET status = 'rejected'
-  WHERE id = $1
-  RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
+UPDATE
+  user_sender_reqs
+SET
+  "status" = 'rejected'
+WHERE
+  id = $1 RETURNING id, user_id, sender_id, requestor, status, created_at, updated_at
 `
 
 func (q *Queries) RejectRequest(ctx context.Context, id int32) (UserSenderReq, error) {
